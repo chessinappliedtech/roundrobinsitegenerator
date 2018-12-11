@@ -1,4 +1,4 @@
-<html>
+<html lang="en">
 <head>
     <title>${player.firstname} ${player.lastname}</title>
     <meta charset="UTF-8">
