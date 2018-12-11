@@ -1,21 +1,19 @@
 package ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable;
 
 import freemarker.template.TemplateException;
-import ru.appliedtech.chess.roundrobinsitegenerator.ranking.RankedPlayer;
 import ru.appliedtech.chess.roundrobinsitegenerator.to.Game;
 import ru.appliedtech.chess.roundrobinsitegenerator.to.Player;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static java.util.Comparator.*;
 import static java.util.Comparator.comparing;
+import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.toList;
 
 public class TournamentTable {
@@ -65,13 +63,16 @@ public class TournamentTable {
                     .filter(game -> game.isPlayedBy(player.getId()))
                     .mapToInt(game -> game.getScoreOf(player.getId()))
                     .sum();
+            int gamesPlayed = (int) allGames.stream()
+                    .filter(game -> game.isPlayedBy(player.getId()))
+                    .count();
             List<Integer> scores = registeredPlayers.stream()
                     .map(opponent -> allGames.stream()
                             .filter(gameOf(player, opponent))
                             .collect(toList()))
                     .map(games -> games.stream().mapToInt(g -> g.getScoreOf(player.getId())).sum())
                     .collect(toList());
-            return new TournamentPlayer(player, 0, totalScore, scores, playerPages.get(player));
+            return new TournamentPlayer(player, 0, totalScore, gamesPlayed, scores, playerPages.get(player));
         };
     }
 

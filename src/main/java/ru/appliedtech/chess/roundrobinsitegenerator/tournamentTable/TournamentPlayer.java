@@ -11,13 +11,15 @@ public class TournamentPlayer {
     private final Player player;
     private int rank;
     private final int score;
+    private final int gamesPlayed;
     private final List<Integer> scores;
     private final String page;
 
-    public TournamentPlayer(Player player, int rank, int score, List<Integer> scores, String page) {
+    public TournamentPlayer(Player player, int rank, int score, int gamesPlayed, List<Integer> scores, String page) {
         this.player = player;
         this.rank = rank;
         this.score = score;
+        this.gamesPlayed = gamesPlayed;
         this.scores = scores;
         this.page = page;
     }
@@ -28,6 +30,10 @@ public class TournamentPlayer {
 
     public String getScore() {
         return scoreToString(score);
+    }
+
+    public int getGamesPlayed() {
+        return gamesPlayed;
     }
 
     public static String scoreToString(int value) {

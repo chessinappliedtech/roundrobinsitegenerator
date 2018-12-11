@@ -10,10 +10,10 @@
         <h2>${player.firstname} ${player.lastname}</h2>
     </caption>
     <tr>
-        <th>Opponent</th>
-        <th>Game</th>
-        <th>Color</th>
-        <th>Score</th>
+        <th>Противник</th>
+        <th>№</th>
+        <th>Цвет</th>
+        <th>Результат</th>
     </tr>
 <#list opponents as opponent>
     <#list opponent.games as game>
@@ -34,7 +34,7 @@
     </#list>
 </#list>
     <tr>
-        <td>Summary</td>
+        <td>Итог</td>
         <td>${total.gamesPlayed}</td>
         <td></td>
         <td>${total.score}</td>

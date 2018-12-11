@@ -8,9 +8,9 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import ru.appliedtech.chess.roundrobinsitegenerator.playerStatus.PlayerStatusTable;
 import ru.appliedtech.chess.roundrobinsitegenerator.playerStatus.PlayerStatusTableRenderer;
-import ru.appliedtech.chess.roundrobinsitegenerator.ranking.RankingTable;
 import ru.appliedtech.chess.roundrobinsitegenerator.to.Game;
 import ru.appliedtech.chess.roundrobinsitegenerator.to.Player;
+import ru.appliedtech.chess.roundrobinsitegenerator.to.TournamentDescription;
 import ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable.TournamentTable;
 
 import java.io.*;
@@ -29,12 +29,13 @@ public class RoundRobinSiteGenerator {
                 args[0],
                 args[1],
                 args[2],
-                Integer.parseInt(args[3]),
-                args[4]);
+                args[3]);
     }
 
-    public void run(String playersFilePath, String gamesFilePath, String outputDir,
-                            int maxGames, String tournamentName) throws IOException, TemplateException {
+    public void run(String tournamentDescriptionFilePath,
+                    String playersFilePath,
+                    String gamesFilePath,
+                    String outputDir) throws IOException, TemplateException {
         Configuration configuration = new Configuration(Configuration.VERSION_2_3_28);
         configuration.setDefaultEncoding("UTF-8");
         configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
@@ -43,6 +44,10 @@ public class RoundRobinSiteGenerator {
         configuration.setClassForTemplateLoading(RoundRobinSiteGenerator.class, "/");
 
         ObjectMapper mapper = new ObjectMapper();
+        TournamentDescription tournamentDescription;
+        try (FileInputStream fis = new FileInputStream(tournamentDescriptionFilePath)) {
+            tournamentDescription = mapper.readValue(fis, new TypeReference<TournamentDescription>() {});
+        }
         List<Player> registeredPlayers;
         try (FileInputStream fis = new FileInputStream(playersFilePath)) {
             registeredPlayers = mapper.readValue(fis, new TypeReference<ArrayList<Player>>() {});
@@ -59,7 +64,7 @@ public class RoundRobinSiteGenerator {
         }
         new File(outputDir).mkdirs();
         for (Player player : registeredPlayers) {
-            PlayerStatusTable playerStatusTable = new PlayerStatusTable(maxGames, playerPages);
+            PlayerStatusTable playerStatusTable = new PlayerStatusTable(tournamentDescription.getMaxGames(), playerPages);
             playerStatusTable.calculate(player, registeredPlayers, games);
             try (Writer writer = new OutputStreamWriter(
                     new FileOutputStream(new File(outputDir, playerPages.get(player))),
@@ -68,15 +73,12 @@ public class RoundRobinSiteGenerator {
             }
         }
 
-        RankingTable rankingTable = new RankingTable(playerPages);
-        rankingTable.calculate(registeredPlayers, games);
         TournamentTable tournamentTable = new TournamentTable(playerPages);
         tournamentTable.calculate(registeredPlayers, games);
         Map<String, Object> model = new HashMap<>();
-        model.put("rankingTable", rankingTable);
         model.put("tournamentTable", tournamentTable);
         model.put("playersCount", registeredPlayers.size());
-        model.put("tournamentTitle", tournamentName);
+        model.put("tournamentDescription", tournamentDescription.resolve(registeredPlayers));
         try (Writer writer = new OutputStreamWriter(
                 new FileOutputStream(new File(outputDir, "index.html")),
                 StandardCharsets.UTF_8)) {
@@ -84,10 +86,6 @@ public class RoundRobinSiteGenerator {
             template.process(model, writer);
         }
 
-        Files.copy(
-                RoundRobinSiteGenerator.class.getResourceAsStream("/rankingTable.css"),
-                Paths.get(outputDir, "rankingTable.css"),
-                StandardCopyOption.REPLACE_EXISTING);
         Files.copy(
                 RoundRobinSiteGenerator.class.getResourceAsStream("/playerStatusTable.css"),
                 Paths.get(outputDir, "playerStatusTable.css"),

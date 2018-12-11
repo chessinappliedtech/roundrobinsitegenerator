@@ -1,12 +1,16 @@
 #tournament-table {
-    table-layout: fixed;
+    table-layout: auto;
     width: 100%;
     border-collapse: collapse;
     border: 1px solid dimgray;
 }
 
+#tournament-table thead th:nth-child(1) {
+    width: 5%;
+}
+
 #tournament-table thead th:nth-child(2) {
-    width: 30%;
+    width: 40%;
 }
 
 #tournament-table th,
