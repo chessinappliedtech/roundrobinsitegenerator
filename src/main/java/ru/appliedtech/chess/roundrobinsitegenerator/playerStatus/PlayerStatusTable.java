@@ -72,11 +72,11 @@ public class PlayerStatusTable {
                         Game game = games.get(index);
                         String color = getColor(player, game);
                         int score = game.getScoreOf(player.getId());
-                        gameWithOpponents.add(new GameWithOpponent(index + 1, color, scoreToString(score)));
+                        gameWithOpponents.add(new GameWithOpponent(index + 1, color, scoreToString(score), game.getDate()));
                     }
                     if (gameWithOpponents.size() < maxGames) {
                         for (int index = gameWithOpponents.size(); index < maxGames; index++) {
-                            gameWithOpponents.add(new GameWithOpponent(index + 1, "*", "*"));
+                            gameWithOpponents.add(new GameWithOpponent(index + 1, "*", "*", "*"));
                         }
                     }
                     return new Opponent(opponentPlayer, gameWithOpponents, playerPages.get(opponentPlayer));

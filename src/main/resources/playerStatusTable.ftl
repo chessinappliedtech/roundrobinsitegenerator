@@ -20,6 +20,7 @@
         <th class="text-center">№</th>
         <th class="text-center">Цвет</th>
         <th class="text-center">Результат</th>
+        <th class="text-center">Дата</th>
     </tr>
     </thead>
     <tbody>
@@ -31,12 +32,14 @@
             <td class="text-center">${game.index}</td>
             <td class="text-center">${game.color}</td>
             <td class="text-center">${game.score}</td>
+            <td class="text-center">${game.date}</td>
             </tr>
         <#else>
             <tr>
             <td class="text-center">${game.index}</td>
             <td class="text-center">${game.color}</td>
             <td class="text-center">${game.score}</td>
+            <td class="text-center">${game.date}</td>
             </tr>
         </#if>
     </#list>
@@ -46,6 +49,7 @@
         <td class="text-center">${total.gamesPlayed}</td>
         <td></td>
         <td class="text-center">${total.score}</td>
+        <td></td>
     </tr>
     </tbody>
 </table>

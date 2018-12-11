@@ -4,11 +4,13 @@ public class GameWithOpponent {
     private final int index;
     private final String color;
     private final String score;
+    private final String date;
 
-    public GameWithOpponent(int index, String color, String score) {
+    public GameWithOpponent(int index, String color, String score, String date) {
         this.index = index;
         this.color = color;
         this.score = score;
+        this.date = date;
     }
 
     public String getScore() {
@@ -21,6 +23,10 @@ public class GameWithOpponent {
 
     public String getColor() {
         return color;
+    }
+
+    public String getDate() {
+        return date;
     }
 
     @Override
