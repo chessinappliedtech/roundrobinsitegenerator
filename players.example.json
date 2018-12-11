@@ -1,0 +1,22 @@
+[
+  {
+    "id": "ilya.maltsev",
+    "firstname": "Ilya",
+    "lastname": "Maltsev"
+  },
+  {
+    "id": "alexey.matveev",
+    "firstname": "Alexey",
+    "lastname": "Matveev"
+  },
+  {
+    "id": "alexey.biryukov",
+    "firstname": "Alexey",
+    "lastname": "Biryukov"
+  },
+  {
+    "id": "victor.bornov",
+    "firstname": "Victor",
+    "lastname": "Bornov"
+  }
+]
