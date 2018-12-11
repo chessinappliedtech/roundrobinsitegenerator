@@ -51,6 +51,7 @@ public class Processor {
             String statusFileName = "status-" + player.getId() + ".html";
             playerPages.put(player, statusFileName);
         }
+        new File(outputDir).mkdirs();
         for (Player player : registeredPlayers) {
             PlayerStatusTable playerStatusTable = new PlayerStatusTable(2, playerPages);
             playerStatusTable.calculate(player, registeredPlayers, games);

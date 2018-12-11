@@ -1,5 +1,5 @@
 <table id="current-ranking">
-    <caption style="text-align:left"><h2>Current ranking</h2></caption>
+    <caption style="text-align:left"><h3>Current ranking</h3></caption>
     <tr>
         <th>Player name</th>
         <th>Rank</th>

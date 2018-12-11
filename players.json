@@ -1,0 +1,42 @@
+﻿[
+  {
+    "id": "ilya.maltsev",
+    "firstname": "Илья",
+    "lastname": "Мальцев"
+  },
+  {
+    "id": "alexey.matveev",
+    "firstname": "Алексей",
+    "lastname": "Матвеев"
+  },
+  {
+    "id": "alexey.biryukov",
+    "firstname": "Алексей",
+    "lastname": "Бирюков"
+  },
+  {
+    "id": "victor.bornov",
+    "firstname": "Виктор",
+    "lastname": "Борнов"
+  },
+  {
+    "id": "alexey.shimeshov",
+    "firstname": "Алексей",
+    "lastname": "Шимешов"
+  },
+  {
+    "id": "anatoly.morozov",
+    "firstname": "Анатолий",
+    "lastname": "Морозов"
+  },
+  {
+    "id": "alexander.shkabara",
+    "firstname": "Александр",
+    "lastname": "Шкабара"
+  },
+  {
+    "id": "alexey.shklyar",
+    "firstname": "Алексей",
+    "lastname": "Шкляр"
+  }
+]
