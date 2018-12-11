@@ -15,6 +15,7 @@ public class TournamentDescription {
     private final String arbiterId;
     private final List<String> deputyArbiterIds;
     private final List<String> gameWritersIds;
+    private final String regulations;
 
     @JsonCreator
     public TournamentDescription(
@@ -22,16 +23,22 @@ public class TournamentDescription {
             @JsonProperty("maxGames") int maxGames,
             @JsonProperty("arbiterId") String arbiterId,
             @JsonProperty("deputyArbiterIds") List<String> deputyArbiterIds,
-            @JsonProperty("gameWritersIds") List<String> gameWritersIds) {
+            @JsonProperty("gameWritersIds") List<String> gameWritersIds,
+            @JsonProperty("regulations") String regulations) {
         this.tournamentTitle = tournamentTitle;
         this.maxGames = maxGames;
         this.arbiterId = arbiterId;
         this.deputyArbiterIds = deputyArbiterIds;
         this.gameWritersIds = gameWritersIds;
+        this.regulations = regulations;
     }
 
     public int getMaxGames() {
         return maxGames;
+    }
+
+    public String getRegulations() {
+        return regulations;
     }
 
     public List<String> getDeputyArbiterIds() {
@@ -63,6 +70,7 @@ public class TournamentDescription {
                 .map(idToName(registeredPlayers))
                 .collect(Collectors.joining(", "));
         result.put("gameWriters", gameWriters);
+        result.put("regulations", regulations);
         return result;
     }
 
