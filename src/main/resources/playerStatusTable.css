@@ -1,5 +1,5 @@
 #player-status {
-    table-layout: fixed;
+    table-layout: auto;
     width: 100%;
     border-collapse: collapse;
     border: 1px solid dimgray;
