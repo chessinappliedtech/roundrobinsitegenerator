@@ -25,9 +25,11 @@
             <td>${game.score}</td>
             </tr>
         <#else>
+            <tr>
             <td>${game.index}</td>
             <td>${game.color}</td>
             <td>${game.score}</td>
+            </tr>
         </#if>
     </#list>
 </#list>
