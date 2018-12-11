@@ -85,14 +85,5 @@ public class RoundRobinSiteGenerator {
             Template template = configuration.getTemplate("index.ftl");
             template.process(model, writer);
         }
-
-        Files.copy(
-                RoundRobinSiteGenerator.class.getResourceAsStream("/playerStatusTable.css"),
-                Paths.get(outputDir, "playerStatusTable.css"),
-                StandardCopyOption.REPLACE_EXISTING);
-        Files.copy(
-                RoundRobinSiteGenerator.class.getResourceAsStream("/tournamentTable.css"),
-                Paths.get(outputDir, "tournamentTable.css"),
-                StandardCopyOption.REPLACE_EXISTING);
     }
 }

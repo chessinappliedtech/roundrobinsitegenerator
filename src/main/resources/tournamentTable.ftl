@@ -1,17 +1,20 @@
-<table id="tournament-table">
-    <caption style="text-align: left">
+<table class="table table-bordered table-hover">
+    <caption style="text-align: left;caption-side: top">
         <h2>${tournamentDescription.tournamentTitle}</h2>
     </caption>
+    <thead class="thead-light">
     <tr>
         <th></th>
         <th>Игрок</th>
 <#list 1..playersCount as index>
-        <th>${index}</th>
+        <th class="text-center">${index}</th>
 </#list>
-        <th>Очки</th>
-        <th>Сыграно партий</th>
-        <th>Место</th>
+        <th class="text-center">Очки</th>
+        <th class="text-center">Сыграно партий</th>
+        <th class="text-center">Место</th>
     </tr>
+    </thead>
+    <tbody>
 <#list tournamentTable.tournamentPlayers as tournamentPlayer>
     <tr>
         <td>${tournamentPlayer?index+1}</td>
@@ -20,12 +23,13 @@
 <#if tournamentPlayer?index == score?index>
         <td style="background: gray"></td>
 <#else>
-        <td>${score!}</td>
+        <td class="text-center">${score!}</td>
 </#if>
 </#list>
-        <td>${tournamentPlayer.score}</td>
-        <td>${tournamentPlayer.gamesPlayed}</td>
-        <td>${tournamentPlayer.rank}</td>
+        <td class="text-center">${tournamentPlayer.score}</td>
+        <td class="text-center">${tournamentPlayer.gamesPlayed}</td>
+        <td class="text-center">${tournamentPlayer.rank}</td>
     </tr>
 </#list>
+    </tbody>
 </table>
