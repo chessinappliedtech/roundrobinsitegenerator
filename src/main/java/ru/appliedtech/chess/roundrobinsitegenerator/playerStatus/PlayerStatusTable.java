@@ -113,8 +113,8 @@ public class PlayerStatusTable {
             this.score = score;
         }
 
-        public int getScore() {
-            return score;
+        public String getScore() {
+            return scoreToString(score);
         }
 
         public int getGamesPlayed() {
