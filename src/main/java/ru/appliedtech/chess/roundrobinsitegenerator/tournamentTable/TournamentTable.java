@@ -39,19 +39,25 @@ public class TournamentTable {
     private static void assignRanks(List<TournamentPlayer> tournamentPlayers) {
         List<TournamentPlayer> players = new ArrayList<>(tournamentPlayers);
         players.sort(comparingInt(TournamentPlayer::getScoreValue).reversed()
+                .thenComparing(TournamentPlayer::getGamesPlayed)
                 .thenComparing(TournamentPlayer::getLastname)
                 .thenComparing(TournamentPlayer::getFirstname)
                 .thenComparing(TournamentPlayer::getId));
         int rank = 1;
         int previousScore = -1;
+        int previousGamesPlayed = -1;
         for (TournamentPlayer player : players) {
             if (previousScore != -1) {
                 if (previousScore != player.getScoreValue()) {
                     rank += 1;
+                } else if (previousGamesPlayed != player.getGamesPlayed()) {
+                    rank += 1;
                 }
                 previousScore = player.getScoreValue();
+                previousGamesPlayed = player.getGamesPlayed();
             } else {
                 previousScore = player.getScoreValue();
+                previousGamesPlayed = player.getGamesPlayed();
             }
             player.setRank(rank);
         }
