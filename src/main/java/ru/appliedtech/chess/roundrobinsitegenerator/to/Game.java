@@ -13,16 +13,22 @@ public class Game {
     private final String blackId;
     private final String date;
     private final GameResult result;
+    private final String pgn;
+    private final String lichessId;
 
     @JsonCreator
     public Game(@JsonProperty("whiteId") String whiteId,
                 @JsonProperty("blackId") String blackId,
                 @JsonProperty("date") String date,
-                @JsonProperty("result") GameResult result) {
+                @JsonProperty("result") GameResult result,
+                @JsonProperty("pgn") String pgn,
+                @JsonProperty("lichessId") String lichessId) {
         this.whiteId = whiteId;
         this.blackId = blackId;
         this.date = date;
         this.result = result;
+        this.pgn = pgn;
+        this.lichessId = lichessId;
     }
 
     public GameResult getResult() {
@@ -39,6 +45,14 @@ public class Game {
 
     public String getWhiteId() {
         return whiteId;
+    }
+
+    public String getPgn() {
+        return pgn;
+    }
+
+    public String getLichessId() {
+        return lichessId;
     }
 
     public String getOpponentOf(String id) {

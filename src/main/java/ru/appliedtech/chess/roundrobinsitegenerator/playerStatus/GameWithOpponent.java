@@ -5,12 +5,16 @@ public class GameWithOpponent {
     private final String color;
     private final String score;
     private final String date;
+    private final String pgn;
+    private final String lichessId;
 
-    public GameWithOpponent(int index, String color, String score, String date) {
+    public GameWithOpponent(int index, String color, String score, String date, String pgn, String lichessId) {
         this.index = index;
         this.color = color;
         this.score = score;
         this.date = date;
+        this.pgn = pgn;
+        this.lichessId = lichessId;
     }
 
     public String getScore() {
@@ -27,6 +31,14 @@ public class GameWithOpponent {
 
     public String getDate() {
         return date;
+    }
+
+    public String getPgn() {
+        return pgn != null ? pgn : "";
+    }
+
+    public String getLichess() {
+        return lichessId != null ? "https://lichess.org/" + lichessId : null;
     }
 
     @Override

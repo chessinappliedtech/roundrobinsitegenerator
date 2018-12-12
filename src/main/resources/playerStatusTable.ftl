@@ -29,14 +29,26 @@
         <#if game?is_first>
             <tr>
             <td rowspan="${maxGames}"><a href="${opponent.page}">${opponent.firstname} ${opponent.lastname}</a></td>
-            <td class="text-center">${game.index}</td>
+            <td class="text-center">
+                <#if game.lichess??>
+                    <a href="${game.lichess}">${game.index}</a>
+                <#else>
+                    ${game.index}
+                </#if>
+            </td>
             <td class="text-center">${game.color}</td>
             <td class="text-center">${game.score}</td>
             <td class="text-center">${game.date}</td>
             </tr>
         <#else>
             <tr>
-            <td class="text-center">${game.index}</td>
+            <td class="text-center">
+                <#if game.lichess??>
+                    <a href="${game.lichess}">${game.index}</a>
+                <#else>
+                    ${game.index}
+                </#if>
+            </td>
             <td class="text-center">${game.color}</td>
             <td class="text-center">${game.score}</td>
             <td class="text-center">${game.date}</td>
