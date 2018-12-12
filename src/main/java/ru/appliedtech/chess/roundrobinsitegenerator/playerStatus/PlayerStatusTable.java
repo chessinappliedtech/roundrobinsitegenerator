@@ -87,9 +87,9 @@ public class PlayerStatusTable {
     private String getColor(Player player, Game game) {
         String color;
         if (game.getWhiteId().equals(player.getId())) {
-            color = "белый";
+            color = "&#1073;&#1077;&#1083;&#1099;&#1081;"; // white
         } else {
-            color = "чёрный";
+            color = "&#1095;&#1105;&#1088;&#1085;&#1099;&#1081;"; // black
         }
         return color;
     }
