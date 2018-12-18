@@ -6,10 +6,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
-import ru.appliedtech.chess.ChessObjectMapper;
-import ru.appliedtech.chess.Game;
-import ru.appliedtech.chess.Player;
-import ru.appliedtech.chess.TournamentDescription;
+import ru.appliedtech.chess.*;
 import ru.appliedtech.chess.roundrobinsitegenerator.playerStatus.PlayerStatusTable;
 import ru.appliedtech.chess.roundrobinsitegenerator.playerStatus.PlayerStatusTableRenderer;
 import ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable.TournamentTable;
@@ -44,18 +41,19 @@ public class RoundRobinSiteGenerator {
         configuration.setWrapUncheckedExceptions(true);
         configuration.setClassForTemplateLoading(RoundRobinSiteGenerator.class, "/");
 
-        ObjectMapper mapper = new ChessObjectMapper();
+        ObjectMapper baseMapper = new ChessBaseObjectMapper();
         TournamentDescription tournamentDescription;
         try (FileInputStream fis = new FileInputStream(tournamentDescriptionFilePath)) {
-            tournamentDescription = mapper.readValue(fis, TournamentDescription.class);
+            tournamentDescription = baseMapper.readValue(fis, TournamentDescription.class);
         }
         List<Player> registeredPlayers;
         try (FileInputStream fis = new FileInputStream(playersFilePath)) {
-            registeredPlayers = mapper.readValue(fis, new TypeReference<ArrayList<Player>>() {});
+            registeredPlayers = baseMapper.readValue(fis, new TypeReference<ArrayList<Player>>() {});
         }
+        ObjectMapper gameObjectMapper = new GameObjectMapper(tournamentDescription.getTournamentSetup());
         List<Game> games;
         try (FileInputStream fis = new FileInputStream(gamesFilePath)) {
-            games = mapper.readValue(fis, new TypeReference<ArrayList<Game>>() {});
+            games = gameObjectMapper.readValue(fis, new TypeReference<ArrayList<Game>>() {});
         }
 
         Map<Player, String> playerPages = new HashMap<>();

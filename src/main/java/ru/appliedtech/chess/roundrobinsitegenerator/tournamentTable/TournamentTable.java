@@ -6,7 +6,9 @@ import ru.appliedtech.chess.Player;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -38,17 +40,17 @@ public class TournamentTable {
 
     private static void assignRanks(List<TournamentPlayer> tournamentPlayers) {
         List<TournamentPlayer> players = new ArrayList<>(tournamentPlayers);
-        players.sort(comparingInt(TournamentPlayer::getScoreValue).reversed()
-                .thenComparing(TournamentPlayer::getGamesPlayed)
+        players.sort(comparing(TournamentPlayer::getScoreValue).reversed()
+                .thenComparing(byGamesPlayed())
                 .thenComparing(TournamentPlayer::getLastName)
                 .thenComparing(TournamentPlayer::getFirstName)
                 .thenComparing(TournamentPlayer::getId));
         int rank = 1;
-        int previousScore = -1;
+        BigDecimal previousScore = null;
         int previousGamesPlayed = -1;
         for (TournamentPlayer player : players) {
-            if (previousScore != -1) {
-                if (previousScore != player.getScoreValue()) {
+            if (previousScore != null) {
+                if (previousScore.compareTo(player.getScoreValue()) != 0) {
                     rank += 1;
                 } else if (previousGamesPlayed != player.getGamesPlayed()) {
                     rank += 1;
@@ -63,20 +65,34 @@ public class TournamentTable {
         }
     }
 
+    private static Comparator<TournamentPlayer> byGamesPlayed() {
+        return (o1, o2) -> {
+            if (o1.getGamesPlayed() == 0 && o2.getGamesPlayed() == 0) {
+                return 0;
+            } else if (o1.getGamesPlayed() == 0) {
+                return 1;
+            } else if (o2.getGamesPlayed() == 0) {
+                return -1;
+            } else {
+                return Integer.compare(o1.getGamesPlayed(), o2.getGamesPlayed());
+            }
+        };
+    }
+
     private Function<Player, TournamentPlayer> toTournamentPlayer(List<Player> registeredPlayers, List<Game> allGames) {
         return player -> {
-            int totalScore = allGames.stream()
+            BigDecimal totalScore = allGames.stream()
                     .filter(game -> game.isPlayedBy(player.getId()))
-                    .mapToInt(game -> game.getScoreOf(player.getId()))
-                    .sum();
+                    .map(game -> game.getScoreOf(player.getId()))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
             int gamesPlayed = (int) allGames.stream()
                     .filter(game -> game.isPlayedBy(player.getId()))
                     .count();
-            List<Integer> scores = registeredPlayers.stream()
+            List<BigDecimal> scores = registeredPlayers.stream()
                     .map(opponent -> allGames.stream()
                             .filter(gameOf(player, opponent))
                             .collect(toList()))
-                    .map(games -> games.stream().mapToInt(g -> g.getScoreOf(player.getId())).sum())
+                    .map(games -> games.stream().map(g -> g.getScoreOf(player.getId())).reduce(BigDecimal.ZERO, BigDecimal::add))
                     .collect(toList());
             return new TournamentPlayer(player, 0, totalScore, gamesPlayed, scores, playerPages.get(player));
         };

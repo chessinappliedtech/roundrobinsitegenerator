@@ -2,20 +2,23 @@ package ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable;
 
 import ru.appliedtech.chess.Player;
 
-import java.text.MessageFormat;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
+import java.util.StringJoiner;
 
+import static java.math.BigDecimal.*;
 import static java.util.stream.Collectors.toList;
 
 public class TournamentPlayer {
     private final Player player;
-    private int rank;
-    private final int score;
+    private Integer rank;
+    private final BigDecimal score;
     private final int gamesPlayed;
-    private final List<Integer> scores;
+    private final List<BigDecimal> scores;
     private final String page;
 
-    public TournamentPlayer(Player player, int rank, int score, int gamesPlayed, List<Integer> scores, String page) {
+    public TournamentPlayer(Player player, int rank, BigDecimal score, int gamesPlayed, List<BigDecimal> scores, String page) {
         this.player = player;
         this.rank = rank;
         this.score = score;
@@ -24,7 +27,7 @@ public class TournamentPlayer {
         this.page = page;
     }
 
-    public int getScoreValue() {
+    public BigDecimal getScoreValue() {
         return score;
     }
 
@@ -36,20 +39,45 @@ public class TournamentPlayer {
         return gamesPlayed;
     }
 
-    public static String scoreToString(int value) {
+    public static String scoreToString(BigDecimal value) {
         String result;
-        if (value % 2 == 1) {
-            int integerPart = value - 1;
-            result = (integerPart != 0 ? Integer.toString(integerPart / 2) : "") + "&#189;";
-        }
-        else {
-            result = Integer.toString(value / 2);
+        BigDecimal wholePart = value.divide(ONE, RoundingMode.DOWN);
+        String wholePartString = wholePart.toBigInteger().toString();
+        if (isWhole(value)) {
+            result = wholePartString;
+        } else if (hasHalf(value)) {
+            boolean zero = wholePart.compareTo(ZERO) == 0;
+            result = (zero ? "" : wholePartString) + "&#189;";
+        } else if (hasFourth(value)) {
+            boolean zero = wholePart.compareTo(ZERO) == 0;
+            result = (zero ? "" : wholePartString) + "&#188;";
+        } else if (hasThreeQuarters(value)) {
+            boolean zero = wholePart.compareTo(ZERO) == 0;
+            result = (zero ? "" : wholePartString) + "&#190;";
+        } else {
+            result = value.toString();
         }
         return result;
     }
 
-    public int getRank() {
-        return rank;
+    private static boolean isWhole(BigDecimal value) {
+        return value.remainder(ONE).compareTo(ZERO) == 0;
+    }
+
+    private static boolean hasHalf(BigDecimal value) {
+        return value.remainder(ONE).compareTo(new BigDecimal(0.5)) == 0;
+    }
+
+    private static boolean hasFourth(BigDecimal value) {
+        return value.remainder(ONE).compareTo(new BigDecimal(0.25)) == 0;
+    }
+
+    private static boolean hasThreeQuarters(BigDecimal value) {
+        return value.remainder(ONE).compareTo(new BigDecimal(0.75)) == 0;
+    }
+
+    public String getRank() {
+        return rank != null ? Integer.toString(rank) : "-";
     }
 
     public List<String> getScores() {
@@ -68,16 +96,23 @@ public class TournamentPlayer {
         return page;
     }
 
-    @Override
-    public String toString() {
-        return MessageFormat.format("TournamentPlayer'{'player={0}, rank={1}, score={2}, scores={3}'}'", player, rank, score, scores);
-    }
-
-    public void setRank(int rank) {
+    public void setRank(Integer rank) {
         this.rank = rank;
     }
 
     public String getId() {
         return player.getId();
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", TournamentPlayer.class.getSimpleName() + "[", "]")
+                .add("player=" + player)
+                .add("rank=" + rank)
+                .add("score=" + score)
+                .add("gamesPlayed=" + gamesPlayed)
+                .add("scores=" + scores)
+                .add("page='" + page + "'")
+                .toString();
     }
 }

@@ -7,11 +7,13 @@ import ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable.TournamentPl
 
 import java.io.IOException;
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 
 public class PlayerStatusTable {
@@ -52,14 +54,14 @@ public class PlayerStatusTable {
         int totalGamesPlayed = (int) allGames.stream()
                 .filter(game -> game.isPlayedBy(player.getId()))
                 .count();
-        int totalScore = allGames.stream()
+        BigDecimal totalScore = allGames.stream()
                 .filter(game -> game.isPlayedBy(player.getId()))
-                .mapToInt(game -> game.getScoreOf(player.getId()))
-                .sum();
+                .map(game -> game.getScoreOf(player.getId()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         total = new Total(totalGamesPlayed, totalScore);
         List<Player> opponentPlayers = registeredPlayers.stream()
                 .filter(registeredPlayer -> !registeredPlayer.getId().equals(player.getId()))
-                .sorted(Comparator.comparing(Player::getLastName).thenComparing(Player::getFirstName).thenComparing(Player::getId))
+                .sorted(comparing(Player::getLastName).thenComparing(Player::getFirstName).thenComparing(Player::getId))
                 .collect(toList());
         opponents = opponentPlayers.stream()
                 .map(opponentPlayer -> {
@@ -71,7 +73,7 @@ public class PlayerStatusTable {
                     for (int index = 0; index < games.size(); index++) {
                         Game game = games.get(index);
                         String color = getColor(player, game);
-                        int score = game.getScoreOf(player.getId());
+                        BigDecimal score = game.getScoreOf(player.getId());
                         String lichess = game.getOuterServiceLinks() != null ? (String) game.getOuterServiceLinks().get("lichess") : null;
                         gameWithOpponents.add(new GameWithOpponent(index + 1, color,
                                 TournamentPlayer.scoreToString(score), game.getDate(),
@@ -90,7 +92,7 @@ public class PlayerStatusTable {
 
     private String getColor(Player player, Game game) {
         String color;
-        if (game.getWhiteId().equals(player.getId())) {
+        if (game.isWhite(player.getId())) {
             color = "&#1073;&#1077;&#1083;&#1099;&#1081;"; // white
         } else {
             color = "&#1095;&#1105;&#1088;&#1085;&#1099;&#1081;"; // black
@@ -98,21 +100,11 @@ public class PlayerStatusTable {
         return color;
     }
 
-    private String getOpponentId(Player player, Game game) {
-        String opponentId;
-        if (game.getWhiteId().equals(player.getId())) {
-            opponentId = game.getBlackId();
-        } else {
-            opponentId = game.getWhiteId();
-        }
-        return opponentId;
-    }
-
     public static class Total {
         private final int gamesPlayed;
-        private final int score;
+        private final BigDecimal score;
 
-        public Total(int gamesPlayed, int score) {
+        public Total(int gamesPlayed, BigDecimal score) {
             this.gamesPlayed = gamesPlayed;
             this.score = score;
         }

@@ -3,6 +3,7 @@ package ru.appliedtech.chess.roundrobinsitegenerator.playerStatus;
 import ru.appliedtech.chess.Player;
 
 import java.util.List;
+import java.util.StringJoiner;
 
 public class Opponent {
     private final Player player;
@@ -33,10 +34,10 @@ public class Opponent {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Opponent{");
-        sb.append("player=").append(player);
-        sb.append(", games=").append(games);
-        sb.append('}');
-        return sb.toString();
+        return new StringJoiner(", ", Opponent.class.getSimpleName() + "[", "]")
+                .add("player=" + player)
+                .add("games=" + games)
+                .add("page='" + page + "'")
+                .toString();
     }
 }
