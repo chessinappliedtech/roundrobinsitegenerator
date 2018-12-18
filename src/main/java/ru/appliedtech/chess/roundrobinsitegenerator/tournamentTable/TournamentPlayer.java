@@ -1,6 +1,6 @@
 package ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable;
 
-import ru.appliedtech.chess.roundrobinsitegenerator.to.Player;
+import ru.appliedtech.chess.Player;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -56,12 +56,12 @@ public class TournamentPlayer {
         return scores.stream().map(TournamentPlayer::scoreToString).collect(toList());
     }
 
-    public String getFirstname() {
-        return player.getFirstname();
+    public String getFirstName() {
+        return player.getFirstName();
     }
 
-    public String getLastname() {
-        return player.getLastname();
+    public String getLastName() {
+        return player.getLastName();
     }
 
     public String getPage() {

@@ -18,7 +18,7 @@
 <#list tournamentTable.tournamentPlayers as tournamentPlayer>
     <tr>
         <td>${tournamentPlayer?index+1}</td>
-        <td><a href="${tournamentPlayer.page}">${tournamentPlayer.firstname} ${tournamentPlayer.lastname}</a></td>
+        <td><a href="${tournamentPlayer.page}">${tournamentPlayer.firstName} ${tournamentPlayer.lastName}</a></td>
 <#list tournamentPlayer.scores as score>
 <#if tournamentPlayer?index == score?index>
         <td style="background: gray"></td>

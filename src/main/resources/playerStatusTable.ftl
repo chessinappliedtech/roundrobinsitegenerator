@@ -12,7 +12,7 @@
 <div class="container">
 <table class="table table-bordered table-hover">
     <caption style="text-align:left;caption-side: top">
-        <h2>${player.firstname} ${player.lastname}</h2>
+        <h2>${player.firstName} ${player.lastName}</h2>
     </caption>
     <thead class="thead-light">
     <tr>
@@ -28,7 +28,7 @@
     <#list opponent.games as game>
         <#if game?is_first>
             <tr>
-            <td rowspan="${maxGames}"><a href="${opponent.page}">${opponent.firstname} ${opponent.lastname}</a></td>
+            <td rowspan="${maxGames}"><a href="${opponent.page}">${opponent.firstName} ${opponent.lastName}</a></td>
             <td class="text-center">
                 <#if game.lichess??>
                     <a href="${game.lichess}">${game.index}</a>

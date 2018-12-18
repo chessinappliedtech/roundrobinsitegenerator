@@ -1,8 +1,9 @@
 package ru.appliedtech.chess.roundrobinsitegenerator.playerStatus;
 
 import freemarker.template.TemplateException;
-import ru.appliedtech.chess.roundrobinsitegenerator.to.Game;
-import ru.appliedtech.chess.roundrobinsitegenerator.to.Player;
+import ru.appliedtech.chess.Game;
+import ru.appliedtech.chess.Player;
+import ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable.TournamentPlayer;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
-import static ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable.TournamentPlayer.scoreToString;
 
 public class PlayerStatusTable {
 
@@ -59,7 +59,7 @@ public class PlayerStatusTable {
         total = new Total(totalGamesPlayed, totalScore);
         List<Player> opponentPlayers = registeredPlayers.stream()
                 .filter(registeredPlayer -> !registeredPlayer.getId().equals(player.getId()))
-                .sorted(Comparator.comparing(Player::getLastname).thenComparing(Player::getFirstname).thenComparing(Player::getId))
+                .sorted(Comparator.comparing(Player::getLastName).thenComparing(Player::getFirstName).thenComparing(Player::getId))
                 .collect(toList());
         opponents = opponentPlayers.stream()
                 .map(opponentPlayer -> {
@@ -72,11 +72,15 @@ public class PlayerStatusTable {
                         Game game = games.get(index);
                         String color = getColor(player, game);
                         int score = game.getScoreOf(player.getId());
-                        gameWithOpponents.add(new GameWithOpponent(index + 1, color, scoreToString(score), game.getDate(), game.getPgn(), game.getLichessId()));
+                        String lichess = (String) game.getOuterServiceLinks().get("lichess");
+                        gameWithOpponents.add(new GameWithOpponent(index + 1, color,
+                                TournamentPlayer.scoreToString(score), game.getDate(),
+                                game.getPgnLocation(), lichess));
                     }
                     if (gameWithOpponents.size() < maxGames) {
                         for (int index = gameWithOpponents.size(); index < maxGames; index++) {
-                            gameWithOpponents.add(new GameWithOpponent(index + 1, "*", "*", "*", null, null));
+                            gameWithOpponents.add(new GameWithOpponent(index + 1, "*",
+                                    "*", "*", null, null));
                         }
                     }
                     return new Opponent(opponentPlayer, gameWithOpponents, playerPages.get(opponentPlayer));
@@ -114,7 +118,7 @@ public class PlayerStatusTable {
         }
 
         public String getScore() {
-            return scoreToString(score);
+            return TournamentPlayer.scoreToString(score);
         }
 
         public int getGamesPlayed() {

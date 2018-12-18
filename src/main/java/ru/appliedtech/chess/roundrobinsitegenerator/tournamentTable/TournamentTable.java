@@ -1,8 +1,8 @@
 package ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable;
 
 import freemarker.template.TemplateException;
-import ru.appliedtech.chess.roundrobinsitegenerator.to.Game;
-import ru.appliedtech.chess.roundrobinsitegenerator.to.Player;
+import ru.appliedtech.chess.Game;
+import ru.appliedtech.chess.Player;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -28,7 +28,7 @@ public class TournamentTable {
     public void calculate(List<Player> registeredPlayers, List<Game> allGames) {
         playersCount = registeredPlayers.size();
         List<Player> registeredSortedPlayers = registeredPlayers.stream()
-                .sorted(comparing(Player::getLastname).thenComparing(Player::getFirstname).thenComparing(Player::getId))
+                .sorted(comparing(Player::getLastName).thenComparing(Player::getFirstName).thenComparing(Player::getId))
                 .collect(toList());
         tournamentPlayers = registeredSortedPlayers.stream()
                 .map(toTournamentPlayer(registeredSortedPlayers, allGames))
@@ -40,8 +40,8 @@ public class TournamentTable {
         List<TournamentPlayer> players = new ArrayList<>(tournamentPlayers);
         players.sort(comparingInt(TournamentPlayer::getScoreValue).reversed()
                 .thenComparing(TournamentPlayer::getGamesPlayed)
-                .thenComparing(TournamentPlayer::getLastname)
-                .thenComparing(TournamentPlayer::getFirstname)
+                .thenComparing(TournamentPlayer::getLastName)
+                .thenComparing(TournamentPlayer::getFirstName)
                 .thenComparing(TournamentPlayer::getId));
         int rank = 1;
         int previousScore = -1;
