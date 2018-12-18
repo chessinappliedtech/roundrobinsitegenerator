@@ -72,7 +72,7 @@ public class PlayerStatusTable {
                         Game game = games.get(index);
                         String color = getColor(player, game);
                         int score = game.getScoreOf(player.getId());
-                        String lichess = (String) game.getOuterServiceLinks().get("lichess");
+                        String lichess = game.getOuterServiceLinks() != null ? (String) game.getOuterServiceLinks().get("lichess") : null;
                         gameWithOpponents.add(new GameWithOpponent(index + 1, color,
                                 TournamentPlayer.scoreToString(score), game.getDate(),
                                 game.getPgnLocation(), lichess));

@@ -1,6 +1,6 @@
 <html lang="en">
 <head>
-    <title>${player.firstname} ${player.lastname}</title>
+    <title>${player.firstName} ${player.lastName}</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet"
