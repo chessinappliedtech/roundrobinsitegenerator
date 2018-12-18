@@ -1,1 +1,1 @@
-call mvn clean package install -DskipTests=true
+call mvn clean package install
