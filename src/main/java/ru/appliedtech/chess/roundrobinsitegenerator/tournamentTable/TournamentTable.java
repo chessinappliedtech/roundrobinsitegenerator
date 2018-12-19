@@ -3,28 +3,29 @@ package ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable;
 import freemarker.template.TemplateException;
 import ru.appliedtech.chess.Game;
 import ru.appliedtech.chess.Player;
+import ru.appliedtech.chess.tiebreaksystems.DirectEncounterSystem;
+import ru.appliedtech.chess.tiebreaksystems.TieBreakSystem;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static java.util.Comparator.comparing;
-import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.toList;
 
 public class TournamentTable {
     private final Map<Player, String> playerPages;
+    private final List<TieBreakSystem> tieBreakSystems;
     private int playersCount;
     private List<TournamentPlayer> tournamentPlayers;
 
-    public TournamentTable(Map<Player, String> playerPages) {
+    public TournamentTable(Map<Player, String> playerPages, List<TieBreakSystem> tieBreakSystems) {
         this.playerPages = playerPages;
+        this.tieBreakSystems = tieBreakSystems;
     }
 
     public void calculate(List<Player> registeredPlayers, List<Game> allGames) {
@@ -35,48 +36,32 @@ public class TournamentTable {
         tournamentPlayers = registeredSortedPlayers.stream()
                 .map(toTournamentPlayer(registeredSortedPlayers, allGames))
                 .collect(toList());
-        assignRanks(tournamentPlayers);
+        assignRanks(tournamentPlayers, tieBreakSystems, allGames);
     }
 
-    private static void assignRanks(List<TournamentPlayer> tournamentPlayers) {
+    private void assignRanks(List<TournamentPlayer> tournamentPlayers, List<TieBreakSystem> tieBreakSystems, List<Game> allGames) {
         List<TournamentPlayer> players = new ArrayList<>(tournamentPlayers);
-        players.sort(comparing(TournamentPlayer::getScoreValue).reversed()
-                .thenComparing(byGamesPlayed())
+        Comparator<Player> playerComparator = tieBreakSystems.stream()
+                .map(t -> (Comparator<Player>)t)
+                .reduce(Comparator::thenComparing)
+                .orElse(new DirectEncounterSystem(allGames));
+        Comparator<TournamentPlayer> comparator = (o1, o2) -> playerComparator.compare(o1.getPlayer(), o2.getPlayer());
+        players.sort(comparator
                 .thenComparing(TournamentPlayer::getLastName)
                 .thenComparing(TournamentPlayer::getFirstName)
                 .thenComparing(TournamentPlayer::getId));
         int rank = 1;
-        BigDecimal previousScore = null;
-        int previousGamesPlayed = -1;
+        TournamentPlayer previousPlayer = null;
         for (TournamentPlayer player : players) {
-            if (previousScore != null) {
-                if (previousScore.compareTo(player.getScoreValue()) != 0) {
-                    rank += 1;
-                } else if (previousGamesPlayed != player.getGamesPlayed()) {
+            if (previousPlayer != null) {
+                int compareResult = comparator.compare(previousPlayer, player);
+                if (compareResult < 0) {
                     rank += 1;
                 }
-                previousScore = player.getScoreValue();
-                previousGamesPlayed = player.getGamesPlayed();
-            } else {
-                previousScore = player.getScoreValue();
-                previousGamesPlayed = player.getGamesPlayed();
             }
+            previousPlayer = player;
             player.setRank(rank);
         }
-    }
-
-    private static Comparator<TournamentPlayer> byGamesPlayed() {
-        return (o1, o2) -> {
-            if (o1.getGamesPlayed() == 0 && o2.getGamesPlayed() == 0) {
-                return 0;
-            } else if (o1.getGamesPlayed() == 0) {
-                return 1;
-            } else if (o2.getGamesPlayed() == 0) {
-                return -1;
-            } else {
-                return Integer.compare(o1.getGamesPlayed(), o2.getGamesPlayed());
-            }
-        };
     }
 
     private Function<Player, TournamentPlayer> toTournamentPlayer(List<Player> registeredPlayers, List<Game> allGames) {

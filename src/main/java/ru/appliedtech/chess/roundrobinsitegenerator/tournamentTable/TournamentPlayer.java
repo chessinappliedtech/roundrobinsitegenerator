@@ -27,6 +27,10 @@ public class TournamentPlayer {
         this.page = page;
     }
 
+    Player getPlayer() {
+        return player;
+    }
+
     public BigDecimal getScoreValue() {
         return score;
     }
