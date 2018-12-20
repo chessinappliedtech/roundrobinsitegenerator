@@ -17,14 +17,21 @@ public class TournamentPlayer {
     private final int gamesPlayed;
     private final List<BigDecimal> scores;
     private final String page;
+    private final int wins;
+    private final BigDecimal neustadtl;
+    private final BigDecimal koya;
 
-    public TournamentPlayer(Player player, int rank, BigDecimal score, int gamesPlayed, List<BigDecimal> scores, String page) {
+    public TournamentPlayer(Player player, int rank, BigDecimal score, int gamesPlayed, List<BigDecimal> scores,
+                            String page, int wins, BigDecimal neustadtl, BigDecimal koya) {
         this.player = player;
         this.rank = rank;
         this.score = score;
         this.gamesPlayed = gamesPlayed;
         this.scores = scores;
         this.page = page;
+        this.wins = wins;
+        this.neustadtl = neustadtl;
+        this.koya = koya;
     }
 
     Player getPlayer() {
@@ -45,7 +52,7 @@ public class TournamentPlayer {
 
     public static String scoreToString(BigDecimal value) {
         String result;
-        BigDecimal wholePart = value.divide(ONE, RoundingMode.DOWN);
+        BigDecimal wholePart = new BigDecimal(value.intValue());
         String wholePartString = wholePart.toBigInteger().toString();
         if (isWhole(value)) {
             result = wholePartString;
@@ -62,6 +69,18 @@ public class TournamentPlayer {
             result = value.toString();
         }
         return result;
+    }
+
+    public int getWins() {
+        return wins;
+    }
+
+    public String getNeustadtl() {
+        return scoreToString(neustadtl);
+    }
+
+    public String getKoya() {
+        return scoreToString(koya);
     }
 
     private static boolean isWhole(BigDecimal value) {

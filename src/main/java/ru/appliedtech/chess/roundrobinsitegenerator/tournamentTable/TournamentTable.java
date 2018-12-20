@@ -3,14 +3,15 @@ package ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable;
 import freemarker.template.TemplateException;
 import ru.appliedtech.chess.Game;
 import ru.appliedtech.chess.Player;
-import ru.appliedtech.chess.tiebreaksystems.DirectEncounterSystem;
-import ru.appliedtech.chess.tiebreaksystems.TieBreakSystem;
+import ru.appliedtech.chess.tiebreaksystems.*;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
-import java.util.*;
-import java.util.function.BinaryOperator;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -79,7 +80,22 @@ public class TournamentTable {
                             .collect(toList()))
                     .map(games -> games.stream().map(g -> g.getScoreOf(player.getId())).reduce(BigDecimal.ZERO, BigDecimal::add))
                     .collect(toList());
-            return new TournamentPlayer(player, 0, totalScore, gamesPlayed, scores, playerPages.get(player));
+            int wins = tieBreakSystems.stream()
+                    .filter(GreaterNumberOfWinsSystem.class::isInstance)
+                    .map(GreaterNumberOfWinsSystem.class::cast)
+                    .map(tbs -> tbs.scoreOf(player).intValue()).findFirst()
+                    .orElse(0);
+            BigDecimal neustadtl = tieBreakSystems.stream()
+                    .filter(NeustadtlSystem.class::isInstance)
+                    .map(NeustadtlSystem.class::cast)
+                    .map(tbs -> tbs.scoreOf(player)).findFirst()
+                    .orElse(BigDecimal.ZERO);
+            BigDecimal koya = tieBreakSystems.stream()
+                    .filter(KoyaSystem.class::isInstance)
+                    .map(KoyaSystem.class::cast)
+                    .map(tbs -> tbs.scoreOf(player)).findFirst()
+                    .orElse(BigDecimal.ZERO);
+            return new TournamentPlayer(player, 0, totalScore, gamesPlayed, scores, playerPages.get(player), wins, neustadtl, koya);
         };
     }
 

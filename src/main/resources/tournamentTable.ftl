@@ -9,8 +9,11 @@
 <#list 1..playersCount as index>
         <th class="text-center">${index}</th>
 </#list>
+        <th class="text-center">Сыграно<br>партий</th>
         <th class="text-center">Очки</th>
-        <th class="text-center">Сыграно партий</th>
+        <th class="text-center">Побед</th>
+        <th class="text-center">Neu (SB)</th>
+        <th class="text-center">Koya</th>
         <th class="text-center">Место</th>
     </tr>
     </thead>
@@ -26,9 +29,12 @@
         <td class="text-center">${score!}</td>
 </#if>
 </#list>
-        <td class="text-center">${tournamentPlayer.score}</td>
         <td class="text-center">${tournamentPlayer.gamesPlayed}</td>
-        <td class="text-center">${tournamentPlayer.rank}</td>
+        <td class="text-center">${tournamentPlayer.score}</td>
+        <td class="text-center">${tournamentPlayer.wins}</td>
+        <td class="text-center">${tournamentPlayer.neustadtl}</td>
+        <td class="text-center">${tournamentPlayer.koya}</td>
+        <td class="text-center"><b>${tournamentPlayer.rank}</b></td>
     </tr>
 </#list>
     </tbody>
