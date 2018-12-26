@@ -2,6 +2,7 @@ package ru.appliedtech.chess.roundrobinsitegenerator.playerStatus;
 
 import freemarker.template.TemplateException;
 import ru.appliedtech.chess.Game;
+import ru.appliedtech.chess.GameResultSystem;
 import ru.appliedtech.chess.Player;
 import ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable.TournamentPlayer;
 
@@ -75,8 +76,11 @@ public class PlayerStatusTable {
                         String color = getColor(player, game);
                         BigDecimal score = game.getScoreOf(player.getId());
                         String lichess = game.getOuterServiceLinks() != null ? (String) game.getOuterServiceLinks().get("lichess") : null;
+                        String strScore = game.getResult().getName() == GameResultSystem.GameResultName.forfeit
+                                ? "-"
+                                : TournamentPlayer.scoreToString(score);
                         gameWithOpponents.add(new GameWithOpponent(index + 1, color,
-                                TournamentPlayer.scoreToString(score), game.getDate(),
+                                strScore, game.getDate(),
                                 game.getPgnLocation(), lichess));
                     }
                     if (gameWithOpponents.size() < maxGames) {
