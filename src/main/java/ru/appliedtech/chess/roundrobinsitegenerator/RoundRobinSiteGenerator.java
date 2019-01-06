@@ -7,11 +7,11 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import ru.appliedtech.chess.*;
+import ru.appliedtech.chess.roundrobin.RoundRobinSetup;
+import ru.appliedtech.chess.roundrobin.RoundRobinTieBreakSystemFactory;
 import ru.appliedtech.chess.roundrobinsitegenerator.playerStatus.PlayerStatusTable;
 import ru.appliedtech.chess.roundrobinsitegenerator.playerStatus.PlayerStatusTableRenderer;
 import ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable.TournamentTable;
-import ru.appliedtech.chess.systems.roundRobin.RoundRobinSetup;
-import ru.appliedtech.chess.tiebreaksystems.RoundRobinTieBreakSystemFactory;
 import ru.appliedtech.chess.tiebreaksystems.TieBreakSystem;
 
 import java.io.*;
@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public class RoundRobinSiteGenerator {
@@ -103,11 +104,11 @@ public class RoundRobinSiteGenerator {
         result.put("arbiter", idToName(registeredPlayers).apply(tournamentDescription.getArbiter()));
         String deputyArbiters = tournamentDescription.getDeputyArbiters().stream()
                 .map(idToName(registeredPlayers))
-                .collect(Collectors.joining(", "));
+                .collect(joining(", "));
         result.put("deputyArbiters", deputyArbiters);
         String gameWriters = tournamentDescription.getGameWriters().stream()
                 .map(idToName(registeredPlayers))
-                .collect(Collectors.joining(", "));
+                .collect(joining(", "));
         result.put("gameWriters", gameWriters);
         result.put("regulations", tournamentDescription.getRegulations());
         return result;
