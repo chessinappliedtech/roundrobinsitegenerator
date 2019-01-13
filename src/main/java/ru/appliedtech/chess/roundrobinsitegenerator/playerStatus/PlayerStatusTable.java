@@ -4,13 +4,12 @@ import freemarker.template.TemplateException;
 import ru.appliedtech.chess.Game;
 import ru.appliedtech.chess.GameResultSystem;
 import ru.appliedtech.chess.Player;
-import ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable.TournamentPlayer;
+import ru.appliedtech.chess.roundrobinsitegenerator.tournamentView.TournamentPlayer;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 

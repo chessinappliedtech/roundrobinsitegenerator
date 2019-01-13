@@ -6,7 +6,7 @@
 
     <groupId>ru.appliedtech.chess</groupId>
     <artifactId>round-robin-site-generator</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
     <build>
         <plugins>
             <plugin>
@@ -24,12 +24,12 @@
         <dependency>
             <groupId>ru.appliedtech.chess</groupId>
             <artifactId>common-base</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>ru.appliedtech.chess</groupId>
             <artifactId>common-io</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.2-SNAPSHOT</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
         <dependency>
@@ -37,16 +37,34 @@
             <artifactId>freemarker</artifactId>
             <version>2.3.28</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.6</version>
+        </dependency>
         <dependency>
             <groupId>ru.appliedtech.chess</groupId>
             <artifactId>tiebreaksystems</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>ru.appliedtech.chess</groupId>
             <artifactId>roundrobin</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.2-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>ru.appliedtech.chess</groupId>
+            <artifactId>roundrobin-io</artifactId>
+            <version>0.2-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>ru.appliedtech.chess</groupId>
+            <artifactId>storage</artifactId>
+            <version>0.2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

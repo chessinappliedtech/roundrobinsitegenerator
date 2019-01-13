@@ -9,9 +9,10 @@ import freemarker.template.TemplateExceptionHandler;
 import ru.appliedtech.chess.*;
 import ru.appliedtech.chess.roundrobin.RoundRobinSetup;
 import ru.appliedtech.chess.roundrobin.RoundRobinTieBreakSystemFactory;
+import ru.appliedtech.chess.roundrobin.io.RoundRobinSetupObjectNodeReader;
 import ru.appliedtech.chess.roundrobinsitegenerator.playerStatus.PlayerStatusTable;
 import ru.appliedtech.chess.roundrobinsitegenerator.playerStatus.PlayerStatusTableRenderer;
-import ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable.TournamentTable;
+import ru.appliedtech.chess.roundrobinsitegenerator.tournamentView.TournamentView;
 import ru.appliedtech.chess.tiebreaksystems.TieBreakSystem;
 
 import java.io.*;
@@ -21,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -46,7 +46,9 @@ public class RoundRobinSiteGenerator {
         configuration.setWrapUncheckedExceptions(true);
         configuration.setClassForTemplateLoading(RoundRobinSiteGenerator.class, "/");
 
-        ObjectMapper baseMapper = new ChessBaseObjectMapper();
+        Map<String, TournamentSetupObjectNodeReader> tournamentSetupReaders = new HashMap<>();
+        tournamentSetupReaders.put("round-robin", new RoundRobinSetupObjectNodeReader());
+        ObjectMapper baseMapper = new ChessBaseObjectMapper(tournamentSetupReaders);
         TournamentDescription tournamentDescription;
         try (FileInputStream fis = new FileInputStream(tournamentDescriptionFilePath)) {
             tournamentDescription = baseMapper.readValue(fis, TournamentDescription.class);
@@ -83,10 +85,10 @@ public class RoundRobinSiteGenerator {
 
         RoundRobinTieBreakSystemFactory tieBreakSystemFactory = new RoundRobinTieBreakSystemFactory(registeredPlayers, games, roundRobinSetup);
         List<TieBreakSystem> tieBreakSystems = roundRobinSetup.getTieBreakSystems().stream().map(tieBreakSystemFactory::create).collect(toList());
-        TournamentTable tournamentTable = new TournamentTable(playerPages, tieBreakSystems);
-        tournamentTable.calculate(registeredPlayers, games);
+        TournamentView tournamentView = new TournamentView(playerPages, tieBreakSystems);
+        tournamentView.calculate(registeredPlayers, games);
         Map<String, Object> model = new HashMap<>();
-        model.put("tournamentTable", tournamentTable);
+        model.put("tournamentView", tournamentView);
         model.put("playersCount", registeredPlayers.size());
         model.put("tournamentDescription", resolve(tournamentDescription, registeredPlayers));
         try (Writer writer = new OutputStreamWriter(

@@ -1,4 +1,4 @@
-package ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable;
+package ru.appliedtech.chess.roundrobinsitegenerator.tournamentView;
 
 import freemarker.template.TemplateException;
 import ru.appliedtech.chess.Game;
@@ -18,13 +18,13 @@ import java.util.function.Predicate;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 
-public class TournamentTable {
+public class TournamentView {
     private final Map<Player, String> playerPages;
     private final List<TieBreakSystem> tieBreakSystems;
     private int playersCount;
     private List<TournamentPlayer> tournamentPlayers;
 
-    public TournamentTable(Map<Player, String> playerPages, List<TieBreakSystem> tieBreakSystems) {
+    public TournamentView(Map<Player, String> playerPages, List<TieBreakSystem> tieBreakSystems) {
         this.playerPages = playerPages;
         this.tieBreakSystems = tieBreakSystems;
     }
@@ -113,7 +113,7 @@ public class TournamentTable {
         return tournamentPlayers;
     }
 
-    public void render(Writer writer, TournamentTableRenderer tournamentTableRenderer) throws IOException, TemplateException {
-        tournamentTableRenderer.render(writer, this);
+    public void render(Writer writer, TournamentViewRenderer tournamentViewRenderer) throws IOException, TemplateException {
+        tournamentViewRenderer.render(writer, this);
     }
 }

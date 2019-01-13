@@ -1,9 +1,8 @@
-package ru.appliedtech.chess.roundrobinsitegenerator.tournamentTable;
+package ru.appliedtech.chess.roundrobinsitegenerator.tournamentView;
 
 import ru.appliedtech.chess.Player;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 import java.util.StringJoiner;
 
