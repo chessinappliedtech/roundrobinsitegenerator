@@ -1,8 +1,8 @@
 package ru.appliedtech.chess.roundrobinsitegenerator.tournament_table;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Writer;
 
 public interface TournamentTableViewRenderingEngine {
-    public void render(TournamentTableView tournamentTableView, OutputStream os) throws IOException;
+    void render(TournamentTableView tournamentTableView, Writer writer) throws IOException;
 }

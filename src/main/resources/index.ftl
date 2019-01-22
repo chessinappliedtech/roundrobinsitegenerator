@@ -10,7 +10,7 @@
 </head>
 <body>
 <div class="container">
-<#include "tournamentView.ftl"/>
+${view}
 <#include "regulations.ftl"/>
 </div>
 </body>

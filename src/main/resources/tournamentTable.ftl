@@ -16,7 +16,13 @@
                 <#if isDiagonalCell(headerCell)>
                     <td style="background: gray"></td>
                 <#else>
-                    <td class="text-center">${headerCell.getValue()}</td>
+                    <td class="text-center">
+                        <#if headerCell.getLink()??>
+                            <a href="${headerCell.getLink()}">${headerCell.getValue()}</a>
+                        <#else>
+                            ${headerCell.getValue()}
+                        </#if>
+                    </td>
                 </#if>
             </#list>
         </tr>
