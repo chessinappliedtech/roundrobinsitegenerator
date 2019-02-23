@@ -79,6 +79,7 @@ public class PlayerStatusViewHtmlRenderingEngine implements PlayerStatusViewRend
                 emptyList(),
                 emptyList(),
                 "",
+                new Date(),
                 setup);
         PlayerStatus playerStatus = new PlayerStatus(player, playerStorage, gameStorage,
                 eloRatingStorage, kValueStorage, tournamentDescription, setup);
