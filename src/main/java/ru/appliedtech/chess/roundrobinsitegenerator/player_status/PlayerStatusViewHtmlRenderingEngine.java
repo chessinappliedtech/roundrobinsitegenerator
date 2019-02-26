@@ -10,6 +10,7 @@ import ru.appliedtech.chess.*;
 import ru.appliedtech.chess.elorating.EloRating;
 import ru.appliedtech.chess.elorating.KValueSet;
 import ru.appliedtech.chess.roundrobin.RoundRobinSetup;
+import ru.appliedtech.chess.roundrobin.color_allocating.ColorAllocatingSystemFactory;
 import ru.appliedtech.chess.roundrobin.io.RoundRobinSetupObjectNodeReader;
 import ru.appliedtech.chess.roundrobin.player_status.PlayerStatus;
 import ru.appliedtech.chess.roundrobinsitegenerator.RoundRobinSiteGenerator;
@@ -24,6 +25,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toList;
+import static ru.appliedtech.chess.roundrobin.RoundRobinSetup.ColorAllocatingSystemDescription;
 
 public class PlayerStatusViewHtmlRenderingEngine implements PlayerStatusViewRenderingEngine {
     private final Configuration templatesConfiguration;
@@ -45,11 +47,14 @@ public class PlayerStatusViewHtmlRenderingEngine implements PlayerStatusViewRend
     }
 
     public static void main(String[] args) throws IOException {
+        ColorAllocatingSystemDescription colorAllocatingSystemDescription =
+                new ColorAllocatingSystemDescription("fixed-alternation-color-allocating-system", 123456);
         RoundRobinSetup setup = new RoundRobinSetup(
                 2,
                 GameResultSystem.STANDARD,
                 asList("direct-encounter", "number-of-wins", "neustadtl", "koya"),
-                TimeControlType.BLITZ);
+                TimeControlType.BLITZ,
+                colorAllocatingSystemDescription);
 
         Map<String, TournamentSetupObjectNodeReader> tournamentSetupReaders = new HashMap<>();
         tournamentSetupReaders.put("round-robin", new RoundRobinSetupObjectNodeReader());
@@ -58,6 +63,7 @@ public class PlayerStatusViewHtmlRenderingEngine implements PlayerStatusViewRend
         try (FileInputStream fis = new FileInputStream("C:\\Chess\\projects\\Blitz1Dec2018\\data\\players.json")) {
             registeredPlayers = baseMapper.readValue(fis, new TypeReference<ArrayList<Player>>() {});
         }
+
         ObjectMapper gameObjectMapper = new GameObjectMapper(setup);
         List<Game> games;
         try (FileInputStream fis = new FileInputStream("C:\\Chess\\projects\\Blitz1Dec2018\\data\\games.json")) {
@@ -75,7 +81,7 @@ public class PlayerStatusViewHtmlRenderingEngine implements PlayerStatusViewRend
                 "Title",
                 "blitz1.dec2018",
                 "Arbiter",
-                registeredPlayers.stream().map(Player::getId).collect(toList()),
+                identifiers(registeredPlayers),
                 emptyList(),
                 emptyList(),
                 "",
@@ -88,7 +94,8 @@ public class PlayerStatusViewHtmlRenderingEngine implements PlayerStatusViewRend
                 new Locale("ru", "RU"),
                 setup,
                 playerStatus,
-                playerLinks);
+                playerLinks,
+                new ColorAllocatingSystemFactory(setup).create(identifiers(registeredPlayers)));
         try (OutputStream os = new FileOutputStream("C:\\Temp\\playerStatus.html")) {
             Configuration configuration = new Configuration(Configuration.VERSION_2_3_28);
             configuration.setDefaultEncoding("UTF-8");
@@ -98,5 +105,9 @@ public class PlayerStatusViewHtmlRenderingEngine implements PlayerStatusViewRend
             configuration.setClassForTemplateLoading(RoundRobinSiteGenerator.class, "/");
             new PlayerStatusViewHtmlRenderingEngine(configuration).render(tournamentTableView, os);
         }
+    }
+
+    private static List<String> identifiers(List<Player> registeredPlayers) {
+        return registeredPlayers.stream().map(Player::getId).collect(toList());
     }
 }

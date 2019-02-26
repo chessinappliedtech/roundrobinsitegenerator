@@ -4,14 +4,12 @@ import ru.appliedtech.chess.Game;
 import ru.appliedtech.chess.Player;
 import ru.appliedtech.chess.elorating.EloRatingChange;
 import ru.appliedtech.chess.roundrobin.RoundRobinSetup;
+import ru.appliedtech.chess.roundrobin.color_allocating.ColorAllocatingSystem;
 import ru.appliedtech.chess.roundrobin.player_status.PlayerStatus;
 import ru.appliedtech.chess.roundrobinsitegenerator.model.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static java.util.Arrays.asList;
@@ -22,15 +20,21 @@ public class PlayerStatusView {
     private final PlayerStatus playerStatus;
     private final RoundRobinSetup roundRobinSetup;
     private final PlayerLinks playerLinks;
+    private final ColorAllocatingSystem colorAllocatingSystem;
     private final HeaderRowView headerRow;
     private final List<RowView<CellView>> rows;
     private final RowView<CellView> summaryRow;
 
-    public PlayerStatusView(Locale locale, RoundRobinSetup roundRobinSetup, PlayerStatus playerStatus, PlayerLinks playerLinks) {
+    public PlayerStatusView(Locale locale,
+                            RoundRobinSetup roundRobinSetup,
+                            PlayerStatus playerStatus,
+                            PlayerLinks playerLinks,
+                            ColorAllocatingSystem colorAllocatingSystem) {
         this.resourceBundle = ResourceBundle.getBundle("resources", locale);
         this.playerStatus = playerStatus;
         this.roundRobinSetup = roundRobinSetup;
         this.playerLinks = playerLinks;
+        this.colorAllocatingSystem = colorAllocatingSystem;
         this.headerRow = createHeaderRow();
         this.rows = createRows();
         this.summaryRow = createSummaryRow();
@@ -57,18 +61,30 @@ public class PlayerStatusView {
                             playerLinks.getLink(opponentPlayer.getId()).map(PlayerLink::getLink).orElse(null),
                             1,
                             roundRobinSetup.getRoundsAmount()));
-                    mainRowCells.addAll(opponent.getGames().stream().findFirst()
+                    String playerId = playerStatus.getPlayer().getId();
+                    List<ColorAllocatingSystem.Color> colors = IntStream.rangeClosed(1, roundRobinSetup.getRoundsAmount())
+                            .mapToObj(round -> colorAllocatingSystem.getColor(playerId, opponentPlayer.getId(), round))
+                            .collect(toList());
+                    ColorAllocatingSystem.Color firstColor = colors.get(0);
+                    List<Game> games = new ArrayList<>(opponent.getGames());
+                    Optional<Game> firstGame = games.stream()
+                            .filter(game -> firstColor == ColorAllocatingSystem.Color.white ? game.isWhite(playerId) : game.isBlack(playerId))
+                            .findFirst();
+                    firstGame.ifPresent(games::remove);
+                    List<CellView> firstGameCells = firstGame
                             .map(game -> completedGameCells(1, game))
-                            .orElse(upcomingGameCells(1)));
+                            .orElse(upcomingGameCells(1, firstColor));
+                    mainRowCells.addAll(firstGameCells);
                     RowView<CellView> mainRow = new RowView<>(mainRowCells);
                     List<RowView<CellView>> playerRows = new ArrayList<>();
-                    List<RowView<CellView>> gameRows = IntStream.range(1, roundRobinSetup.getRoundsAmount())
+                    List<RowView<CellView>> gameRows = IntStream.rangeClosed(2, roundRobinSetup.getRoundsAmount())
                             .mapToObj(i -> {
-                                if (i < opponent.getGames().size()) {
-                                    return completedGameCells(i + 1, opponent.getGames().get(i));
-                                } else {
-                                    return upcomingGameCells(i + 1);
-                                }
+                                ColorAllocatingSystem.Color color = colors.get(i - 1);
+                                Optional<Game> game = games.stream()
+                                        .filter(g -> color == ColorAllocatingSystem.Color.white ? g.isWhite(playerId) : g.isBlack(playerId))
+                                        .findFirst();
+                                game.ifPresent(games::remove);
+                                return game.map(g -> completedGameCells(i, g)).orElse(upcomingGameCells(i, color));
                             })
                             .map(RowView::new)
                             .collect(toList());
@@ -90,10 +106,12 @@ public class PlayerStatusView {
                 new CellView(String.valueOf(ratingChangeIn(game))));
     }
 
-    private List<CellView> upcomingGameCells(int gameIndex) {
+    private List<CellView> upcomingGameCells(int gameIndex, ColorAllocatingSystem.Color color) {
         return asList(
                 new IntCellView(gameIndex),
-                new CellView("*"),
+                new CellView(color == ColorAllocatingSystem.Color.white
+                        ? resourceBundle.getString("player.status.view.white")
+                        : resourceBundle.getString("player.status.view.black")),
                 new CellView("*"),
                 new CellView("*"),
                 new CellView("*"));

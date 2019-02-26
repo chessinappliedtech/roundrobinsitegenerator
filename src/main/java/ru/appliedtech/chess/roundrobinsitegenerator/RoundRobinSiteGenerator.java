@@ -13,6 +13,8 @@ import ru.appliedtech.chess.elorating.KValue;
 import ru.appliedtech.chess.elorating.KValueSet;
 import ru.appliedtech.chess.roundrobin.RoundRobinSetup;
 import ru.appliedtech.chess.roundrobin.TournamentTable;
+import ru.appliedtech.chess.roundrobin.color_allocating.ColorAllocatingSystem;
+import ru.appliedtech.chess.roundrobin.color_allocating.ColorAllocatingSystemFactory;
 import ru.appliedtech.chess.roundrobin.io.RoundRobinSetupObjectNodeReader;
 import ru.appliedtech.chess.roundrobin.player_status.PlayerStatus;
 import ru.appliedtech.chess.roundrobinsitegenerator.model.PlayerLink;
@@ -30,6 +32,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static java.util.Collections.emptyMap;
+import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.*;
 
 public class RoundRobinSiteGenerator {
@@ -65,12 +68,13 @@ public class RoundRobinSiteGenerator {
 
         Locale locale = resolveLocale(localeDef);
         PlayerLinks playerLinks = new PlayerLinks(id -> new PlayerLink(id, "status-" + id + ".html"), emptyMap());
-
+        ColorAllocatingSystem colorAllocatingSystem = new ColorAllocatingSystemFactory(roundRobinSetup)
+                .create(playerStorage.getPlayers().stream().map(Player::getId).collect(toList()));
         for (Player player : playerStorage.getPlayers()) {
             PlayerStatus playerStatus = new PlayerStatus(player, playerStorage, gameStorage,
                     eloRatingStorage, kValueStorage, tournamentDescription, roundRobinSetup);
             PlayerStatusView playerStatusView = new PlayerStatusView(locale, roundRobinSetup,
-                    playerStatus, playerLinks);
+                    playerStatus, playerLinks, colorAllocatingSystem);
             String playerStatusFileName = playerLinks.getLink(player.getId())
                     .map(PlayerLink::getLink)
                     .orElseThrow(IllegalStateException::new);
@@ -201,8 +205,10 @@ public class RoundRobinSiteGenerator {
         try (FileInputStream fis = new FileInputStream(playersFilePath)) {
             players = baseMapper.readValue(fis, new TypeReference<ArrayList<Player>>() {});
         }
+        List<String> registeredPlayerIds = tournamentDescription.getPlayers();
         List<Player> registeredPlayers = players.stream()
-                .filter(player -> tournamentDescription.getPlayers().contains(player.getId()))
+                .filter(player -> registeredPlayerIds.contains(player.getId()))
+                .sorted(comparingInt(p -> registeredPlayerIds.indexOf(p.getId())))
                 .collect(toList());
         return new PlayerReadOnlyStorage(registeredPlayers);
     }
