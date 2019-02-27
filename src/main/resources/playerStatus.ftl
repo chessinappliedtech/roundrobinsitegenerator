@@ -9,7 +9,7 @@
           crossorigin="anonymous">
 </head>
 <body>
-<div class="container">
+<div class="container-fluid">
     <table class="table table-bordered table-hover">
         <caption style="text-align:left;caption-side: top">
             <h2>${getPlayerFullName()}</h2>
