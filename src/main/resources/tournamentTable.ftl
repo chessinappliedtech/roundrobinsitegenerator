@@ -14,9 +14,9 @@
         <tr>
             <#list playerRow.getCells() as headerCell>
                 <#if isDiagonalCell(headerCell)>
-                    <td style="background: gray"></td>
+                    <td style="background: gray" class="fixed-square"></td>
                 <#else>
-                    <td class="text-center">
+                    <td class="text-center fixed-square">
                         <#if headerCell.getLink()??>
                             <a href="${headerCell.getLink()}">${headerCell.getValue()}</a>
                         <#else>

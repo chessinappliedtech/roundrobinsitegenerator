@@ -7,6 +7,12 @@
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
           crossorigin="anonymous">
+    <style>
+        .fixed-square {
+            min-width: 50px;
+            height: 50px;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid">
@@ -17,7 +23,7 @@
         <thead class="thead-light">
         <tr>
             <#list getHeaderRow().getCells() as headerCell>
-                <th class="text-center">${headerCell.getValue()}</th>
+                <th class="text-center fixed-square">${headerCell.getValue()}</th>
             </#list>
         </tr>
         </thead>
@@ -25,7 +31,7 @@
         <#list getRows() as row>
             <tr>
                 <#list row.getCells() as cell>
-                    <td class="text-center" colspan="${cell.getColspan()}" rowspan="${cell.getRowspan()}">
+                    <td class="text-center fixed-square" colspan="${cell.getColspan()}" rowspan="${cell.getRowspan()}">
                         <#if cell.getLink()??>
                             <a href="${cell.getLink()}">${cell.getValue()}</a>
                         <#else>
@@ -37,7 +43,7 @@
         </#list>
         <tr>
             <#list getSummaryRow().getCells() as summaryCell>
-                <td class="text-center">${summaryCell.getValue()}</td>
+                <td class="text-center fixed-square">${summaryCell.getValue()}</td>
             </#list>
         </tr>
         </tbody>
