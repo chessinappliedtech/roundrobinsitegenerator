@@ -43,7 +43,7 @@ public class PlayerStatusView {
     private RowView<CellView> createSummaryRow() {
         List<CellView> cells = new ArrayList<>();
         cells.add(new CellView(resourceBundle.getString("player.status.view.summary")));
-        cells.add(new IntCellView(playerStatus.getGamesPlayed()));
+        cells.add(new IntCellView(playerStatus.getGamesPlayed(), null));
         cells.add(new CellView(""));
         cells.add(playerStatus.getTotalScore().map(score -> (CellView) new ScoreCellView(score)).orElse(new CellView("")));
         cells.add(new CellView(""));
@@ -96,8 +96,13 @@ public class PlayerStatusView {
     }
 
     private List<CellView> completedGameCells(int gameIndex, Game game) {
+        String link = null;
+        if (game.getOuterServiceLinks() != null) {
+            link = (String) game.getOuterServiceLinks().get("lichess");
+        }
+        IntCellView indexCell = new IntCellView(gameIndex, link);
         return asList(
-                new IntCellView(gameIndex),
+                indexCell,
                 new CellView(game.isWhite(getPlayerId())
                         ? resourceBundle.getString("player.status.view.white")
                         : resourceBundle.getString("player.status.view.black")),
@@ -108,7 +113,7 @@ public class PlayerStatusView {
 
     private List<CellView> upcomingGameCells(int gameIndex, ColorAllocatingSystem.Color color) {
         return asList(
-                new IntCellView(gameIndex),
+                new IntCellView(gameIndex, null),
                 new CellView(color == ColorAllocatingSystem.Color.white
                         ? resourceBundle.getString("player.status.view.white")
                         : resourceBundle.getString("player.status.view.black")),
