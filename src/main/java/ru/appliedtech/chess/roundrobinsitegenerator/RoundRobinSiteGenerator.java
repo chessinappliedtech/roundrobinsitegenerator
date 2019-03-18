@@ -68,8 +68,12 @@ public class RoundRobinSiteGenerator {
 
         Locale locale = resolveLocale(localeDef);
         PlayerLinks playerLinks = new PlayerLinks(id -> new PlayerLink(id, "status-" + id + ".html"), emptyMap());
+        List<String> players = playerStorage.getPlayers().stream().map(Player::getId).collect(toList());
+        List<String> joinedPlayers = players.stream().filter(p -> tournamentDescription.getJoinedPlayers().contains(p)).collect(toList());
+        List<String> startingPlayers = new ArrayList<>(players);
+        startingPlayers.removeAll(joinedPlayers);
         ColorAllocatingSystem colorAllocatingSystem = new ColorAllocatingSystemFactory(roundRobinSetup)
-                .create(playerStorage.getPlayers().stream().map(Player::getId).collect(toList()));
+                .create(startingPlayers, joinedPlayers);
         for (Player player : playerStorage.getPlayers()) {
             PlayerStatus playerStatus = new PlayerStatus(player, playerStorage, gameStorage,
                     eloRatingStorage, kValueStorage, tournamentDescription, roundRobinSetup);
@@ -210,6 +214,11 @@ public class RoundRobinSiteGenerator {
                 .filter(player -> registeredPlayerIds.contains(player.getId()))
                 .sorted(comparingInt(p -> registeredPlayerIds.indexOf(p.getId())))
                 .collect(toList());
+        List<String> joinedPlayers = tournamentDescription.getJoinedPlayers();
+        registeredPlayers.addAll(players.stream()
+                .filter(player -> joinedPlayers.contains(player.getId()))
+                .sorted(comparingInt(p -> joinedPlayers.indexOf(p.getId())))
+                .collect(toList()));
         return new PlayerReadOnlyStorage(registeredPlayers);
     }
 
