@@ -14,6 +14,8 @@ import java.util.ResourceBundle;
 import static java.util.stream.Collectors.toList;
 
 public class TournamentTableView {
+    private static final String QUIT_PLAYER = "&ndash;";
+    private static final String QUIT_OPPONENT = "+";
     private final HeaderRowView headerRowView;
     private final ResourceBundle resourceBundle;
     private final List<PlayerRowView> playerRowViews;
@@ -85,7 +87,7 @@ public class TournamentTableView {
                     CellView scoreCellView = opponentCell.getScores().stream()
                             .reduce(BigDecimal::add)
                             .map(score -> (CellView)new OpponentScoreCellView(score))
-                            .orElse(new NoScoreCellView());
+                            .orElse(toEmptyScoreCellView(playerRow, opponentCell));
                     cells.add(scoreCellView);
                 } else {
                     cells.add(new DiagonalCellView());
@@ -96,12 +98,25 @@ public class TournamentTableView {
             cells.addAll(playerRow.getTieBreakValues().stream()
                     .map(tieBreakValue -> new ScoreCellView(tieBreakValue.getValue()))
                     .collect(toList()));
-            cells.add(new IntCellView(tournamentTable.getRanking().get(playerRow.getPlayer().getId())));
+            cells.add(playerRow.isQuit() ? new CellView(QUIT_PLAYER) : new IntCellView(tournamentTable.getRanking().get(playerRow.getPlayer().getId())));
             cells.add(new RatingCellView(playerRow.getCurrentRating().getValue()));
 
             rowViews.add(new PlayerRowView(cells));
         }
         return rowViews;
+    }
+
+    private CellView toEmptyScoreCellView(TournamentTable.PlayerRow playerRow, TournamentTable.OpponentCell opponentCell) {
+        if (opponentCell.isQuit() && playerRow.isQuit()) {
+            return new CellView(QUIT_PLAYER);
+        }
+        else if (opponentCell.isQuit()) {
+            return new CellView(QUIT_OPPONENT);
+        }
+        else if (playerRow.isQuit()) {
+            return new CellView(QUIT_PLAYER);
+        }
+        return new NoScoreCellView();
     }
 
     public boolean isDiagonalCell(CellView cellView) {

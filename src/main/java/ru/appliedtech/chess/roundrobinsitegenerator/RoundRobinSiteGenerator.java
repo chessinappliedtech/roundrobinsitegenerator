@@ -72,6 +72,7 @@ public class RoundRobinSiteGenerator {
         List<String> joinedPlayers = players.stream().filter(p -> tournamentDescription.getJoinedPlayers().contains(p)).collect(toList());
         List<String> startingPlayers = new ArrayList<>(players);
         startingPlayers.removeAll(joinedPlayers);
+        List<String> quitPlayers = players.stream().filter(p -> tournamentDescription.getQuitPlayers().contains(p)).collect(toList());
         ColorAllocatingSystem colorAllocatingSystem = new ColorAllocatingSystemFactory(roundRobinSetup)
                 .create(startingPlayers, joinedPlayers);
         for (Player player : playerStorage.getPlayers()) {
@@ -88,7 +89,7 @@ public class RoundRobinSiteGenerator {
         }
 
         TournamentTable table = new TournamentTable(playerStorage, gameStorage,
-                eloRatingStorage, kValueStorage, roundRobinSetup);
+                eloRatingStorage, kValueStorage, roundRobinSetup, players, quitPlayers);
         TournamentTableView tournamentTableView = new TournamentTableView(
                 locale,
                 table,
