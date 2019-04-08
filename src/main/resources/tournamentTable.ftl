@@ -1,7 +1,4 @@
 <table class="table table-bordered table-hover">
-    <caption style="text-align: left;caption-side: top">
-        <h2>${getTournamentTitle()}</h2>
-    </caption>
     <thead class="thead-light">
     <tr>
         <#list getHeaderRowView().getCells() as headerCell>

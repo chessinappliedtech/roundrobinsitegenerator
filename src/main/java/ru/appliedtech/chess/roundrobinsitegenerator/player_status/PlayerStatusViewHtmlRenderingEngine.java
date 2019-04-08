@@ -88,7 +88,8 @@ public class PlayerStatusViewHtmlRenderingEngine implements PlayerStatusViewRend
                 new Date(),
                 setup,
                 emptyList(),
-                emptyList());
+                emptyList(),
+                null);
         PlayerStatus playerStatus = new PlayerStatus(player, playerStorage, gameStorage,
                 eloRatingStorage, kValueStorage, tournamentDescription, setup);
         PlayerLinks playerLinks = new PlayerLinks(id -> null, emptyMap());
@@ -97,7 +98,8 @@ public class PlayerStatusViewHtmlRenderingEngine implements PlayerStatusViewRend
                 setup,
                 playerStatus,
                 playerLinks,
-                new ColorAllocatingSystemFactory(setup).create(identifiers(registeredPlayers), emptyList()));
+                new ColorAllocatingSystemFactory(setup).create(identifiers(registeredPlayers), emptyList()),
+                null);
         try (OutputStream os = new FileOutputStream("C:\\Temp\\playerStatus.html")) {
             Configuration configuration = new Configuration(Configuration.VERSION_2_3_28);
             configuration.setDefaultEncoding("UTF-8");

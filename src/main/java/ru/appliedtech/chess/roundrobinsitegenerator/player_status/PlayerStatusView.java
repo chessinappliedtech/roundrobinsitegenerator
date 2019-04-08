@@ -2,6 +2,7 @@ package ru.appliedtech.chess.roundrobinsitegenerator.player_status;
 
 import ru.appliedtech.chess.Color;
 import ru.appliedtech.chess.Game;
+import ru.appliedtech.chess.Link;
 import ru.appliedtech.chess.Player;
 import ru.appliedtech.chess.elorating.EloRatingChange;
 import ru.appliedtech.chess.roundrobin.RoundRobinSetup;
@@ -22,6 +23,7 @@ public class PlayerStatusView {
     private final RoundRobinSetup roundRobinSetup;
     private final PlayerLinks playerLinks;
     private final ColorAllocatingSystem colorAllocatingSystem;
+    private final Link tournamentLink;
     private final HeaderRowView headerRow;
     private final List<RowView<CellView>> rows;
     private final RowView<CellView> summaryRow;
@@ -30,12 +32,14 @@ public class PlayerStatusView {
                             RoundRobinSetup roundRobinSetup,
                             PlayerStatus playerStatus,
                             PlayerLinks playerLinks,
-                            ColorAllocatingSystem colorAllocatingSystem) {
+                            ColorAllocatingSystem colorAllocatingSystem,
+                            Link tournamentLink) {
         this.resourceBundle = ResourceBundle.getBundle("resources", locale);
         this.playerStatus = playerStatus;
         this.roundRobinSetup = roundRobinSetup;
         this.playerLinks = playerLinks;
         this.colorAllocatingSystem = colorAllocatingSystem;
+        this.tournamentLink = tournamentLink;
         this.headerRow = createHeaderRow();
         this.rows = createRows();
         this.summaryRow = createSummaryRow();
@@ -164,5 +168,9 @@ public class PlayerStatusView {
 
     public String getCurrentRating() {
         return playerStatus.getCurrentRating().getValue().toString();
+    }
+
+    public Link getTournamentLink() {
+        return tournamentLink;
     }
 }

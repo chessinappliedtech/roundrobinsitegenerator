@@ -16,6 +16,11 @@
 </head>
 <body>
 <div class="container-fluid">
+    <#if getTournamentLink()??>
+        <br>
+        <a href="${getTournamentLink().getValue()}">${getTournamentLink().getName()}</a>
+        <br>
+    </#if>
     <table class="table table-bordered table-hover">
         <caption style="text-align:left;caption-side: top">
             <h2>${getPlayerFullName()}</h2>

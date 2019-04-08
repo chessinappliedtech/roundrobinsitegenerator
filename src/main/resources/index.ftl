@@ -16,7 +16,13 @@
 </head>
 <body>
 <div class="container-fluid">
+<h2>${tournamentDescription.tournamentTitle}</h2><br>
 ${view}
+<#if tournamentDescription.linkvalue??>
+    <br>
+    <a href="${tournamentDescription.linkvalue}">${tournamentDescription.linkname}</a><br>
+    <br>
+</#if>
 <#include "regulations.ftl"/>
 </div>
 </body>

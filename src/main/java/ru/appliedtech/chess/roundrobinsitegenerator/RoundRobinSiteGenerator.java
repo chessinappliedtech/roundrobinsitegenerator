@@ -75,11 +75,18 @@ public class RoundRobinSiteGenerator {
         List<String> quitPlayers = players.stream().filter(p -> tournamentDescription.getQuitPlayers().contains(p)).collect(toList());
         ColorAllocatingSystem colorAllocatingSystem = new ColorAllocatingSystemFactory(roundRobinSetup)
                 .create(startingPlayers, joinedPlayers);
+        Link mainPageLink = null;
+        if (tournamentDescription.getLinks() != null) {
+            mainPageLink = tournamentDescription.getLinks().stream()
+                    .filter(l -> l.getPurpose().equals("self"))
+                    .findFirst()
+                    .orElse(null);
+        }
         for (Player player : playerStorage.getPlayers()) {
             PlayerStatus playerStatus = new PlayerStatus(player, playerStorage, gameStorage,
                     eloRatingStorage, kValueStorage, tournamentDescription, roundRobinSetup);
             PlayerStatusView playerStatusView = new PlayerStatusView(locale, roundRobinSetup,
-                    playerStatus, playerLinks, colorAllocatingSystem);
+                    playerStatus, playerLinks, colorAllocatingSystem, mainPageLink);
             String playerStatusFileName = playerLinks.getLink(player.getId())
                     .map(PlayerLink::getLink)
                     .orElseThrow(IllegalStateException::new);
@@ -259,6 +266,15 @@ public class RoundRobinSiteGenerator {
                 .collect(joining(", "));
         result.put("gameWriters", gameWriters);
         result.put("regulations", tournamentDescription.getRegulations());
+        if (tournamentDescription.getLinks() != null) {
+            tournamentDescription.getLinks().stream()
+                    .filter(l -> l.getPurpose().equals("playoff"))
+                    .findFirst()
+                    .ifPresent(l -> {
+                        result.put("linkvalue", l.getValue());
+                        result.put("linkname", l.getName());
+                    });
+        }
         return result;
     }
 
