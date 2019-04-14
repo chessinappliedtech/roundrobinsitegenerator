@@ -1,16 +1,21 @@
 package ru.appliedtech.chess.roundrobinsitegenerator;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import ru.appliedtech.chess.*;
 import ru.appliedtech.chess.elorating.EloRating;
-import ru.appliedtech.chess.elorating.KValue;
 import ru.appliedtech.chess.elorating.KValueSet;
+import ru.appliedtech.chess.elorating.PlayerEloRating;
+import ru.appliedtech.chess.elorating.PlayerKValueSet;
+import ru.appliedtech.chess.elorating.io.PlayerEloRatingDeserializer;
+import ru.appliedtech.chess.elorating.io.PlayerEloRatingSerializer;
+import ru.appliedtech.chess.elorating.io.PlayerKValueSetDeserializer;
+import ru.appliedtech.chess.elorating.io.PlayerKValueSetSerializer;
 import ru.appliedtech.chess.roundrobin.RoundRobinSetup;
 import ru.appliedtech.chess.roundrobin.TournamentTable;
 import ru.appliedtech.chess.roundrobin.color_allocating.ColorAllocatingSystem;
@@ -126,79 +131,57 @@ public class RoundRobinSiteGenerator {
 
     private KValueReadOnlyStorage readKValues(String kValueStorageFilePath) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        List<KValuesJsonRecord> records;
+        SimpleModule module = new SimpleModule("base");
+        module.addSerializer(new PlayerKValueSetSerializer());
+        module.addDeserializer(PlayerKValueSet.class, new PlayerKValueSetDeserializer());
+        mapper.registerModule(module);
+        List<PlayerKValueSet> records;
         try (FileInputStream fis = new FileInputStream(kValueStorageFilePath)) {
-            records = mapper.readValue(fis, new TypeReference<ArrayList<KValuesJsonRecord>>() {});
+            records = mapper.readValue(fis, new TypeReference<ArrayList<PlayerKValueSet>>() {});
         }
         Map<String, KValueSet> kValues = records.stream().collect(toMap(
-                KValuesJsonRecord::getPlayerId,
-                r -> new KValueSet(
-                        new KValue(r.getkValueSetRecord().getClassic()),
-                        new KValue(r.getkValueSetRecord().getRapid()),
-                        new KValue(r.getkValueSetRecord().getBlitz()))));
+                PlayerKValueSet::getPlayerId,
+                PlayerKValueSet::getKValueSet));
         return new KValueReadOnlyStorage(kValues);
-    }
-
-    public static final class KValuesJsonRecord {
-        @JsonProperty
-        private String playerId;
-        @JsonProperty("kvalues")
-        private KValueSetRecord kValueSetRecord;
-
-        public String getPlayerId() {
-            return playerId;
-        }
-
-        public KValueSetRecord getkValueSetRecord() {
-            return kValueSetRecord;
-        }
-    }
-
-    public static final class KValueSetRecord {
-        @JsonProperty
-        private int rapid;
-        @JsonProperty
-        private int classic;
-        @JsonProperty
-        private int blitz;
-
-        public int getBlitz() {
-            return blitz;
-        }
-
-        public int getClassic() {
-            return classic;
-        }
-
-        public int getRapid() {
-            return rapid;
-        }
     }
 
     private EloRatingReadOnlyStorage readEloRatings(String eloRatingStorageFilePath, TournamentDescription tournamentDescription) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        List<RatingRecord> records;
+        SimpleModule module = new SimpleModule("base");
+        module.addSerializer(new PlayerEloRatingSerializer());
+        module.addDeserializer(PlayerEloRating.class, new PlayerEloRatingDeserializer());
+        mapper.registerModule(module);
+
+        List<PlayerEloRating> records;
         try (FileInputStream fis = new FileInputStream(eloRatingStorageFilePath)) {
-            records = mapper.readValue(fis, new TypeReference<ArrayList<RatingRecord>>() {});
+            records = mapper.readValue(fis, new TypeReference<ArrayList<PlayerEloRating>>() {});
         }
+        RoundRobinSetup roundRobinSetup = (RoundRobinSetup) tournamentDescription.getTournamentSetup();
+        TimeControlType timeControlType = roundRobinSetup.getTimeControlType();
+
         Map<EloRatingKey, EloRating> ratings = records.stream().collect(toMap(
                 r -> new EloRatingKey(tournamentDescription.getStartDay().toInstant(), r.getPlayerId()),
-                r -> r.getRating() != null ? new EloRating(r.getRating()) : new EloRating(new BigDecimal(1500.00).setScale(2, BigDecimal.ROUND_HALF_UP))));
+                extractRating(timeControlType)));
         return new EloRatingReadOnlyStorage(ratings);
     }
 
-    public static final class RatingRecord {
-        @JsonProperty
-        private String playerId;
-        @JsonProperty
-        private BigDecimal rating;
-
-        public String getPlayerId() {
-            return playerId;
-        }
-
-        public BigDecimal getRating() {
-            return rating;
+    private static Function<PlayerEloRating, EloRating> extractRating(TimeControlType timeControlType) {
+        EloRating defaultRating = new EloRating(new BigDecimal(1500.00).setScale(2, BigDecimal.ROUND_HALF_UP));
+        switch (timeControlType) {
+            case CLASSIC:
+                return r -> r.getClassicRating() != null
+                        ? r.getClassicRating()
+                        : defaultRating;
+            case RAPID:
+                return r -> r.getRapidRating() != null
+                        ? r.getRapidRating()
+                        : defaultRating;
+            case BLITZ:
+                return r -> r.getBlitzRating() != null
+                        ? r.getBlitzRating()
+                        : defaultRating;
+            default:
+                return r -> defaultRating;
         }
     }
 
