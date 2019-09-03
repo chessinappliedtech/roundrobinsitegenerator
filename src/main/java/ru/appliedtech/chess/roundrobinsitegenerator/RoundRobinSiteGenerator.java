@@ -38,7 +38,9 @@ import java.util.function.Function;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Comparator.comparingInt;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class RoundRobinSiteGenerator {
     public static void main(String[] args) throws IOException, TemplateException {
@@ -112,7 +114,7 @@ public class RoundRobinSiteGenerator {
 
         Map<String, Object> model = new HashMap<>();
         model.put("view", sw.toString());
-        model.put("tournamentDescription", resolve(tournamentDescription, playerStorage.getPlayers()));
+        model.put("tournamentDescription", resolve(tournamentDescription, readKnownParticipants(playersFilePath)));
         try (Writer writer = new OutputStreamWriter(
                 new FileOutputStream(new File(outputDir, "index.html")),
                 StandardCharsets.UTF_8)) {
@@ -211,6 +213,15 @@ public class RoundRobinSiteGenerator {
                 .sorted(comparingInt(p -> joinedPlayers.indexOf(p.getId())))
                 .collect(toList()));
         return new PlayerReadOnlyStorage(registeredPlayers);
+    }
+
+    private List<Player> readKnownParticipants(String playersFilePath) throws IOException {
+        ObjectMapper baseMapper = new ChessBaseObjectMapper(emptyMap());
+        List<Player> players;
+        try (FileInputStream fis = new FileInputStream(playersFilePath)) {
+            players = baseMapper.readValue(fis, new TypeReference<ArrayList<Player>>() {});
+        }
+        return players;
     }
 
     private TournamentDescription readTournamentDescription(String tournamentDescriptionFilePath) throws IOException {
